@@ -17,6 +17,28 @@ function replaceWord(word, dest) {
         v.html(v.html().replace(reg, dest))
     })
 }
+function known(knownSet, word) {
+    var s = word.toLowerCase();
+    if (knownSet.contains(s)) {
+        return true;
+    }
+    if (/s$/.test(s) && knownSet.contains(s.substring(0, s.length - 1))) {
+        return true;
+    }
+    if (/es$/.test(s) && knownSet.contains(s.substring(0, s.length - 2))) {
+        return true;
+    }
+    if (/d$/.test(s) && knownSet.contains(s.substring(0, s.length - 1))) {
+        return true;
+    }
+    if (/ed$/.test(s) && knownSet.contains(s.substring(0, s.length - 2))) {
+        return true;
+    }
+    if (/ing$/.test(s) && knownSet.contains(s.substring(0, s.length - 3))) {
+        return true;
+    }
+    return false;
+}
 
 function highlight(word) {
     replaceWord(word, "<b>" + word + "</b>");
@@ -83,7 +105,7 @@ log("article words count = " + articleSet.size());
 // unknown words
 var unknownSet = new Set();
 articleSet.each(function(word) {
-    if (!knownSet.contains(word.toLowerCase())) {
+    if (!known(knownSet, word)) {
         unknownSet.add(word);
     }
 });
