@@ -32,6 +32,9 @@ log("after add cet-4, known count = " + knownSet.size());
 // add junior high
 knownSet.addAll(junior_high_keys);
 log("after add junior high, known count = " + knownSet.size());
+// add senior high
+knownSet.addAll(senior_high_keys);
+log("after add senior high, known count = " + knownSet.size());
 // add personal custom words
 if (typeof(custom_keys) !== "undefined") {
     knownSet.addAll(custom_keys);
