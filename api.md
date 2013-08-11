@@ -14,4 +14,12 @@
 能不能在页面上访问插件的localStorage，考虑使用一些trick的办法，
 比如说background等
 
+API
+1. 请求个人词库
+    custom_keys?id={user id}
+
+2. 管理个人词库
+    custom_keys/add?word={new word}
+    custom_keys/delete?word={new word}
+
     
