@@ -11,7 +11,12 @@ Set.prototype.addAll = function(arr) { var self = this; arr.forEach(function(k) 
 function log(obj) { console.log(obj); } 
 
 function replaceWord(word, dest) {
-    var reg = new RegExp("\\b" + word + "\\b");
+    // log("replaceWord " + word + " -> " + dest);
+    replaceHtml("\\b" + word + "\\b", dest);
+}
+function replaceHtml(word, dest) {
+    var reg = new RegExp(word);
+    // log("replaceHtml " + reg + " -> " + dest);
     $("p").each(function() {
         var v = $(this);
         v.html(v.html().replace(reg, dest))
@@ -111,7 +116,47 @@ articleSet.each(function(word) {
 });
 log("unknown words count = " + unknownSet.size());
 
+function fanyiUrl(word) {
+    return "http://fanyi.youdao.com/openapi.do?keyfrom=EnglishCoach&key=139078614&type=data&doctype=json&version=1.1&q=" + word;
+}
+
+function translate(word, data) {
+    // translate
+    var trans = data.translation[0];
+    if (trans !== data.query) {
+        replaceHtml("<b>" + word + "</b>", "<b>" + word + "</b>(" + trans + ")");
+    }
+}
+
+function label(word) {
+    var apiKey = "api_" + word;
+    chrome.storage.local.get(apiKey, function(items) {
+        var value = items[apiKey];
+        if (typeof(value) == "undefined") {
+            // request api
+            log("request api for: " + word)
+            $.getJSON(fanyiUrl(word), function(data){
+                // save in cache
+                items[apiKey] = data;
+                chrome.storage.local.set(items);
+
+                translate(word, data);
+            });
+        } else {
+            // cache
+            log("find in cache: " + word);
+            translate(word, value);
+        }
+    });
+}
+
 // highlight unknown words
 unknownSet.each(function(word) {
     highlight(word);
 });
+
+// Query for the unknown words
+unknownSet.each(function(word) {
+    label(word);
+});
+
