@@ -83,6 +83,9 @@ function setCustomKeys(keys) {
 
 // known words
 var knownSet = new Set();
+// add stopwords
+knownSet.addAll(stopwords);
+log("after add stopwords, known count = " + knownSet.size());
 // add cet-4
 knownSet.addAll(cet4_keys);
 log("after add cet-4, known count = " + knownSet.size());

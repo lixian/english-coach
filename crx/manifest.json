@@ -1,7 +1,8 @@
 {
    "content_scripts": [ {
       "js": [ 
-          "jquery.js",
+          "js/jquery.js",
+          "keys/stopwords.js",
           "keys/cet4_keys.js",
           "keys/junior_high_keys.js",
           "keys/senior_high_keys.js",
