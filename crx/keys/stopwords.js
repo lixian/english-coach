@@ -35,5 +35,5 @@ var stopwords = ["s",
     "whichever", "while", "who", "whoever", "whom", "whose", "why", "with",
     "withal", "within", "without", "ye", "yea", "yeah", "yes", "yet",
     "yonder", "you", "your", "yours", "yourself", "yourselves", "s", "ll",
-    "re", "m", "don", "t", "ve"
+    "re", "m", "don", "t", "ve", "k",
     ];
