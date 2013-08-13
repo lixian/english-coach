@@ -12,7 +12,7 @@
           "custom_keys.js",
           "coach.js"
           ],
-        "matches": ["http://*/*","https://*/*" ],
+        "matches": ["http://*/*","https://*/*","file://*" ],
         "run_at": "document_end"
    } ],
    "description": "Highlight the unknown words",
