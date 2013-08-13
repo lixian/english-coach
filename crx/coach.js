@@ -90,30 +90,31 @@ function setCustomKeys(keys) {
     });
 }
 /////////// main ///////////
+function lower(arr) {
+    return arr.map(function(word) { return word.toLowerCase(); });
+}
 
 // known words
 var knownSet = new Set();
 // add stopwords
-knownSet.addAll(stopwords);
+knownSet.addAll(lower(stopwords));
 log("after add stopwords, known count = " + knownSet.size());
 // add cet-4
-knownSet.addAll(cet4_keys);
+knownSet.addAll(lower(cet4_keys));
 log("after add cet-4, known count = " + knownSet.size());
 // add junior high
-knownSet.addAll(junior_high_keys);
+knownSet.addAll(lower(junior_high_keys));
 log("after add junior high, known count = " + knownSet.size());
 // add senior high
-knownSet.addAll(senior_high_keys);
+knownSet.addAll(lower(senior_high_keys));
 log("after add senior high, known count = " + knownSet.size());
 
 // add personal custom words
-
 // setCustomKeys(null);
-
 chrome.storage.local.get("custom_keys", function(items){
     var keys = items.custom_keys;
     if (keys) {
-        knownSet.addAll(keys);
+        knownSet.addAll(lower(keys));
         log("after add custom, known count = " + knownSet.size());
     }
 
@@ -124,7 +125,7 @@ chrome.storage.local.get("custom_keys", function(items){
 function others() {
     // article
     var articleSet = new Set();
-    var words = $("p").text().split(/[^a-zA-Z]/);
+    var words = $("body").text().split(/[^a-zA-Z]/);
     articleSet.addAll(words);
     articleSet.remove("")
         log("article words count = " + articleSet.size());
@@ -150,8 +151,9 @@ function others() {
     function translate(word, data) {
         // translate
         var trans = data.translation[0];
-        if (trans !== data.query) {
-            replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b>(<b data-type='fanyi-test' data-key='api_"+ word +"' style='color: red'>" + trans + "</b>)");
+        log(data.query + " -> " + trans);
+        if (trans.toLowerCase() !== data.query.toLowerCase()) {
+            replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b><b data-type='fanyi-test' data-key='api_"+ word +"' style=''>(" + trans + ")</b>");
         }
     }
     $(document).delegate('[data-type="fanyi-test"]', "click", function (e) {
@@ -166,8 +168,7 @@ function others() {
         var word = keyWord.replace("api_", "");
         log("addCustomKey: " + word);
         addCustomKey(word);
-        $this.remove();
-        $("[data-key='" + word+ "']").remove();
+        $("[data-key='" + keyWord + "']").remove();
         chrome.extension.sendRequest(
             {type: "getDialogHtml", key: keyWord},
             function(response) {
