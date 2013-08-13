@@ -52,9 +52,17 @@ function highlight(word) {
 // localStorage
 function addCustomKey(key) {
     chrome.storage.local.get("custom_keys", function(items){
-        items.custom_keys[key] = true;
+        if (!items.custom_keys) {
+            items.custom_keys = [];
+        }
+        var keys = items.custom_keys;
+        keys.push(key);
         //log("after add: " + Object.keys(items.custom_keys));
-        chrome.storage.local.set(items);
+        chrome.storage.local.set(items, function() {
+            log("saved key: " + key);
+            logCustomKeys();
+            
+        });
     });
 }
 
@@ -72,7 +80,7 @@ function addCustomKeys(keys) {
 
 function logCustomKeys() {
     chrome.storage.local.get("custom_keys", function(items) {
-        log("log: " + Object.keys(items.custom_keys));
+        log("custom keys: " + items.custom_keys);
     });
 }
 
@@ -97,109 +105,124 @@ log("after add junior high, known count = " + knownSet.size());
 // add senior high
 knownSet.addAll(senior_high_keys);
 log("after add senior high, known count = " + knownSet.size());
+
 // add personal custom words
-// setCustomKeys({});
-if (typeof(custom_keys) !== "undefined") {
-    knownSet.addAll(custom_keys);
-    log("after add custom words, known count = " + knownSet.size());
-    addCustomKeys(custom_keys);
-}
 
-// article
-var articleSet = new Set();
-var words = $("p").text().split(/[^a-zA-Z]/);
-articleSet.addAll(words);
-articleSet.remove("")
-log("article words count = " + articleSet.size());
+// setCustomKeys(null);
 
-// unknown words
-var unknownSet = new Set();
-articleSet.each(function(word) {
-    if (!known(knownSet, word)) {
-        unknownSet.add(word);
+chrome.storage.local.get("custom_keys", function(items){
+    var keys = items.custom_keys;
+    if (keys) {
+        knownSet.addAll(keys);
+        log("after add custom, known count = " + knownSet.size());
     }
+
+    // do others
+    others();
 });
-log("unknown words count = " + unknownSet.size());
-chrome.extension.sendRequest(
-    {type: "saveUnknown", unknownSet: unknownSet}, 
-    function(response) {
-    }
-);
 
-function fanyiUrl(word) {
-    return "http://fanyi.youdao.com/openapi.do?keyfrom=EnglishCoach&key=139078614&type=data&doctype=json&version=1.1&q=" + word;
-}
+function others() {
+    // article
+    var articleSet = new Set();
+    var words = $("p").text().split(/[^a-zA-Z]/);
+    articleSet.addAll(words);
+    articleSet.remove("")
+        log("article words count = " + articleSet.size());
 
-function translate(word, data) {
-    // translate
-    var trans = data.translation[0];
-    if (trans !== data.query) {
-        replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b>(<b data-type='fanyi-test' data-key='api_"+ word +"' style='color: red'>" + trans + "</b>)");
-    }
-}
-$(document).delegate('[data-type="fanyi-test"]', "mouseenter", function () {
-    var $this = $(this);
-    var thisWord = $this.text();
-    var keyWord = $this.attr("data-key");
-    var coording = {
-        left: $this.offset().left,
-        top: $this.offset().top
-    }
-    var thisWidth = $this.width();
-    console.log(coording);
-    console.log(keyWord);
-    console.log(localStorage[keyWord]);
+    // unknown words
+    var unknownSet = new Set();
+    articleSet.each(function(word) {
+        if (!known(knownSet, word)) {
+            unknownSet.add(word);
+        }
+    });
+    log("unknown words count = " + unknownSet.size());
     chrome.extension.sendRequest(
-        {type: "getDialogHtml", key: keyWord},
-        function(response) {
-            var dialogHtmlStr = response.dialogHtmlStr;
-        }
-    );
-});
-function get(key) {
-    return localStorage[key];
-}
+            {type: "saveUnknown", unknownSet: unknownSet}, 
+            function(response) {
+            }
+            );
 
-function set(key, val) {
-    chrome.storage.local.set({key: val}, function(){
-        log(key + " saved.")
-    });
-}
-
-set("xxx", 111);
-function label(word) {
-    var apiKey = "api_" + word;
-    console.log(apiKey);
-    if (localStorage[apiKey]) {
-        var value = JSON.parse(localStorage[apiKey]);
-        translate(word, value);
-        return;
+    function fanyiUrl(word) {
+        return "http://fanyi.youdao.com/openapi.do?keyfrom=EnglishCoach&key=139078614&type=data&doctype=json&version=1.1&q=" + word;
     }
-    chrome.extension.sendRequest({apiKey: apiKey, type: "queryDic"}, function(response) {
-        var value = response.value;
-        if (typeof(value) == "undefined") {
-            // request api
-            $.getJSON(fanyiUrl(word), function(data){
-                // save in cache
-                translate(word, data);
-                localStorage[apiKey] = JSON.stringify(data);
-            });
-        } else {
-            // cache
-            log("find in cache: " + word);
-            localStorage[apiKey] = value;
-            translate(word, value);
+
+    function translate(word, data) {
+        // translate
+        var trans = data.translation[0];
+        if (trans !== data.query) {
+            replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b>(<b data-type='fanyi-test' data-key='api_"+ word +"' style='color: red'>" + trans + "</b>)");
         }
+    }
+    $(document).delegate('[data-type="fanyi-test"]', "click", function (e) {
+        var $this = $(this);
+        var thisWord = $this.text();
+        var keyWord = $this.attr("data-key");
+        var coording = {
+            left: $this.offset().left, top: $this.offset().top
+        };
+        var thisWidth = $this.width();
+
+        var word = keyWord.replace("api_", "");
+        log("addCustomKey: " + word);
+        addCustomKey(word);
+        $this.remove();
+        $("[data-key='" + word+ "']").remove();
+        chrome.extension.sendRequest(
+            {type: "getDialogHtml", key: keyWord},
+            function(response) {
+                var dialogHtmlStr = response.dialogHtmlStr;
+
+            }
+            );
+    });
+    function get(key) {
+        return localStorage[key];
+    }
+
+    function set(key, val) {
+        chrome.storage.local.set({key: val}, function(){
+            log(key + " saved.")
+        });
+    }
+
+    set("xxx", 111);
+    function label(word) {
+        var apiKey = "api_" + word;
+        if (localStorage[apiKey]) {
+            var value = JSON.parse(localStorage[apiKey]);
+            translate(word, value);
+            return;
+        }
+        chrome.extension.sendRequest({apiKey: apiKey, type: "queryDic"}, function(response) {
+            var value = response.value;
+            if (typeof(value) == "undefined") {
+                // request api
+                $.getJSON(fanyiUrl(word), function(data){
+                    // save in cache
+                    translate(word, data);
+                    localStorage[apiKey] = JSON.stringify(data);
+                });
+            } else {
+                // cache
+                log("find in cache: " + word);
+                localStorage[apiKey] = value;
+                translate(word, value);
+            }
+        });
+    }
+
+    // highlight unknown words
+    unknownSet.each(function(word) {
+        highlight(word);
+    });
+
+    // Query for the unknown words
+    unknownSet.each(function(word) {
+        label(word);
+    });
+
+    chrome.storage.local.get("hover", function(items) {
+        log("last hover: " + items.hover);
     });
 }
-
-// highlight unknown words
-unknownSet.each(function(word) {
-    highlight(word);
-});
-
-// Query for the unknown words
-unknownSet.each(function(word) {
-    label(word);
-});
-
