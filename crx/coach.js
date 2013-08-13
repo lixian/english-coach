@@ -45,8 +45,12 @@ function known(knownSet, word) {
     return false;
 }
 
+function wrap(word) {
+    return "<span>" + word + "</span>";
+}
+
 function highlight(word) {
-    replaceWord(word, "<b>" + word + "</b>");
+    replaceWord(word, wrap(word));
 }
 
 // localStorage
@@ -153,7 +157,7 @@ function others() {
         var trans = data.translation[0];
         log(data.query + " -> " + trans);
         if (trans.toLowerCase() !== data.query.toLowerCase()) {
-            replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b><b data-type='fanyi-test' data-key='api_"+ word +"' style=''>(" + trans + ")</b>");
+            replaceHtml(wrap(word), wrap(word) + "<b data-type='fanyi-test' data-key='api_"+ word +"' style=''>(" + trans + ")</b>");
         }
     }
     $(document).delegate('[data-type="fanyi-test"]', "click", function (e) {
