@@ -1,4 +1,7 @@
 {
+    "background": {
+        "page": "bg.html"
+    },
    "content_scripts": [ {
       "js": [ 
           "js/jquery.js",
@@ -9,7 +12,8 @@
           "custom_keys.js",
           "coach.js"
           ],
-      "matches": [ "file://*/*.html" ]
+        "matches": ["http://*/*","https://*/*" ],
+        "run_at": "document_end"
    } ],
    "description": "Highlight the unknown words",
    "icons": {
@@ -22,5 +26,6 @@
    "permissions": [ "tabs", "\u003Call_urls\u003E", "storage" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
    "version": "0.1",
-   "web_accessible_resources": []
+   "web_accessible_resources": [],
+    "content_security_policy": "script-src 'self'; object-src 'self'"
 }

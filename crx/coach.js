@@ -11,12 +11,12 @@ Set.prototype.addAll = function(arr) { var self = this; arr.forEach(function(k) 
 function log(obj) { console.log(obj); } 
 
 function replaceWord(word, dest) {
-    // log("replaceWord " + word + " -> " + dest);
+     //log("replaceWord " + word + " -> " + dest);
     replaceHtml("\\b" + word + "\\b", dest);
 }
 function replaceHtml(word, dest) {
     var reg = new RegExp(word);
-    // log("replaceHtml " + reg + " -> " + dest);
+     //log("replaceHtml " + reg + " -> " + dest);
     $("p").each(function() {
         var v = $(this);
         v.html(v.html().replace(reg, dest))
@@ -53,19 +53,21 @@ function highlight(word) {
 function addCustomKey(key) {
     chrome.storage.local.get("custom_keys", function(items){
         items.custom_keys[key] = true;
-        log("after add: " + Object.keys(items.custom_keys));
+        //log("after add: " + Object.keys(items.custom_keys));
         chrome.storage.local.set(items);
     });
 }
 
 function addCustomKeys(keys) {
-    chrome.storage.local.get("custom_keys", function(items){
-        keys.forEach(function(key) {
-            items.custom_keys[key] = true;
-        });
-        log("after add: " + Object.keys(items.custom_keys));
-        chrome.storage.local.set(items);
-    });
+    /*
+     *chrome.storage.local.get("custom_keys", function(items){
+     *    keys.forEach(function(key) {
+     *        items.custom_keys[key] = true;
+     *    });
+     *    log("after add: " + Object.keys(items.custom_keys));
+     *    chrome.storage.local.set(items);
+     *});
+     */
 }
 
 function logCustomKeys() {
@@ -118,6 +120,11 @@ articleSet.each(function(word) {
     }
 });
 log("unknown words count = " + unknownSet.size());
+chrome.extension.sendRequest(
+    {type: "saveUnknown", unknownSet: unknownSet}, 
+    function(response) {
+    }
+);
 
 function fanyiUrl(word) {
     return "http://fanyi.youdao.com/openapi.do?keyfrom=EnglishCoach&key=139078614&type=data&doctype=json&version=1.1&q=" + word;
@@ -127,27 +134,60 @@ function translate(word, data) {
     // translate
     var trans = data.translation[0];
     if (trans !== data.query) {
-        replaceHtml("<b>" + word + "</b>", "<b>" + word + "</b>(" + trans + ")");
+        replaceHtml("<b>" + word + "</b>", "<b >" + word + "</b>(<b data-type='fanyi-test' data-key='api_"+ word +"' style='color: red'>" + trans + "</b>)");
     }
 }
+$(document).delegate('[data-type="fanyi-test"]', "mouseenter", function () {
+    var $this = $(this);
+    var thisWord = $this.text();
+    var keyWord = $this.attr("data-key");
+    var coording = {
+        left: $this.offset().left,
+        top: $this.offset().top
+    }
+    var thisWidth = $this.width();
+    console.log(coording);
+    console.log(keyWord);
+    console.log(localStorage[keyWord]);
+    chrome.extension.sendRequest(
+        {type: "getDialogHtml", key: keyWord},
+        function(response) {
+            var dialogHtmlStr = response.dialogHtmlStr;
+        }
+    );
+});
+function get(key) {
+    return localStorage[key];
+}
 
+function set(key, val) {
+    chrome.storage.local.set({key: val}, function(){
+        log(key + " saved.")
+    });
+}
+
+set("xxx", 111);
 function label(word) {
     var apiKey = "api_" + word;
-    chrome.storage.local.get(apiKey, function(items) {
-        var value = items[apiKey];
+    console.log(apiKey);
+    if (localStorage[apiKey]) {
+        var value = JSON.parse(localStorage[apiKey]);
+        translate(word, value);
+        return;
+    }
+    chrome.extension.sendRequest({apiKey: apiKey, type: "queryDic"}, function(response) {
+        var value = response.value;
         if (typeof(value) == "undefined") {
             // request api
-            log("request api for: " + word)
             $.getJSON(fanyiUrl(word), function(data){
                 // save in cache
-                items[apiKey] = data;
-                chrome.storage.local.set(items);
-
                 translate(word, data);
+                localStorage[apiKey] = JSON.stringify(data);
             });
         } else {
             // cache
             log("find in cache: " + word);
+            localStorage[apiKey] = value;
             translate(word, value);
         }
     });

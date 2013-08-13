@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>English Coach</title>
+</head>
+<body>
+    <div id="youdaoDictBg" style="width: 320px; height: 137px;">  
+        <div id="bgTop" class="bg-sprite" style="height: 68px;"> 
+            <div id="bgTopRight" class="bg-sprite" style="width: 160px; height: 68px;"></div> 
+        </div>     
+        <div id="bgBottom" class="bg-sprite" style="height: 69px;">
+            <div id="bgBottomRight" class="bg-sprite" style="width: 160px; height: 69px;"></div>
+        </div>                
+    </div>                
+    <div id="youdaoDictMain" style="height: 137px;">                    
+        <div id="youdaoDictTop" style="height: 20px;">                        
+            <div id="dictIcon" class="sprite"></div>                       
+            <span id="dictTitle">有道翻译</span>                   
+        </div>
+    </div>                    
+    <div id="youdaoDictCenter" style="height: 114px;">                        
+        <div id="result" class="no-x-scroll" style="border-color: rgb(140, 165, 197); width: 302px; height: 109px;">
+            <h2 id="title">
+                compared
+                <span id="phonetic">[k?m'p??d]</span>
+                <a id="more"
+                    href="http://dict.youdao.com/search?keyfrom=selector&amp;q=compared"
+                    target="_blank" hidefocus="true">详细&gt;&gt;</a>
+            </h2>
+            <div id="basic">
+                <p>adj. 比较的，对照的（compare的过去式和过去分词）</p>
+            </div>
+            <div id="web">
+                <h3 class="sub-item">
+                    网络释义<span>┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈</span>
+                </h3>
+                <p>
+                    <span class="web-item">相比</span> <span class="split"></span>
+                    <span class="web-item">比作</span><span class="split"></span>
+                    <span class="web-item">相较</span>
+                </p>
+            </div>
+            <p id="bottom" class="has-layout">
+                <a id="download" class="bottom-link"
+                    href="http://cidian.youdao.com/?keyfrom=dictapi.selector" target="_blank">下载有道词典</a>
+                <a id="search" class="bottom-link"
+                    href="http://www.youdao.com/search?keyfrom=dictapi.selector&amp;q=compared" target="_blank">查看搜索结果</a>
+            </p>
+        </div>
+    </div>
+   <script type="text/template" id="md-info">
+        <dt>
+            <span><%=word%></span>
+            <span><%=basic.phonetic%></span>
+        </dt>
+    </script>
+
+    <script type="text/template" id="md-base">
+        <span><%=meaning%></span>
+    </script>
+
+    <script type="text/template" id="md-webmeaning">
+        <dt><%=key%></dt>
+        <dd><%=value%></dd>
+    </script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="bg.js"></script>
+    <script type="text/javascript" src="js/tmpl.js"></script>
+</body>
+</html>
