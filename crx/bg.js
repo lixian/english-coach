@@ -1,3 +1,22 @@
+chrome.browserAction.onClicked.addListener(function (tab) {
+        if (window.stopwords) {
+            return;
+        }
+        chrome.tabs.executeScript(null, {file:"keys/stopwords.js", runAt: "document_end"}, function () {
+            chrome.tabs.executeScript(null, {file:"keys/junior_high_keys.js"}, function () {
+                chrome.tabs.executeScript(null, {file:"keys/senior_high_keys.js"}, function () {
+                    chrome.tabs.executeScript(null, {file:"keys/cet4_keys.js"}, function () {
+                        chrome.tabs.executeScript(null, {file:"js/jquery.js"},function () {
+                                chrome.tabs.executeScript(null, {file:"coach.js"},function () {
+                                                        console.log(1234567);
+                                                        });
+                                                });
+                                              });
+                                          });
+                                      });
+                                  });
+});
+
 function get(key) {
     return localStorage[key];
 }

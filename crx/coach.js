@@ -1,4 +1,5 @@
 // global funcitons
+console.log(1111);
 var Set = function() { this._map = {}; }
 Set.prototype.add = function(k) { this._map[k] = true; }
 Set.prototype.remove = function(k) { delete this._map[k]; }
@@ -173,13 +174,6 @@ function others() {
         log("addCustomKey: " + word);
         addCustomKey(word);
         $("[data-key='" + keyWord + "']").remove();
-        chrome.extension.sendRequest(
-            {type: "getDialogHtml", key: keyWord},
-            function(response) {
-                var dialogHtmlStr = response.dialogHtmlStr;
-
-            }
-            );
     });
     function get(key) {
         return localStorage[key];

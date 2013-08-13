@@ -2,22 +2,9 @@
     "background": {
         "page": "bg.html"
     },
-   "content_scripts": [ {
-      "js": [ 
-          "js/jquery.js",
-          "keys/stopwords.js",
-          "keys/cet4_keys.js",
-          "keys/junior_high_keys.js",
-          "keys/senior_high_keys.js",
-          "custom_keys.js",
-          "coach.js"
-          ],
-        "matches": [
-            // "http://*/*",
-            // "https://*/*",
-            "file://*" ],
-        "run_at": "document_end"
-   } ],
+    "browser_action": {
+        "default_icon": "images/icon.png"
+    },
    "description": "Highlight the unknown words",
    "icons": {
       "128": "images/icon.png",
@@ -26,7 +13,7 @@
    },
    "manifest_version": 2,
    "name": "English Coach",
-   "permissions": [ "tabs", "\u003Call_urls\u003E", "storage" ],
+   "permissions": [ "tabs", "\u003Call_urls\u003E", "storage","http://*/"],
    "update_url": "https://clients2.google.com/service/update2/crx",
    "version": "0.1",
    "web_accessible_resources": [],
