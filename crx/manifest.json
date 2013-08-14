@@ -5,17 +5,17 @@
     "browser_action": {
         "default_icon": "images/icon.png"
     },
-   "description": "Highlight the unknown words",
-   "icons": {
-      "128": "images/icon.png",
-      "16": "images/icon.png",
-      "48": "images/icon.png"
-   },
-   "manifest_version": 2,
-   "name": "English Coach",
-   "permissions": [ "tabs", "\u003Call_urls\u003E", "storage","http://*/"],
-   "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "0.1",
-   "web_accessible_resources": [],
+    "description": "根据个人词库，标注阅读中的生词。单击标注即可增加其到个人词库。",
+    "icons": {
+        "128": "images/icon.png",
+        "16": "images/icon.png",
+        "48": "images/icon.png"
+    },
+    "manifest_version": 2,
+    "name": "英语阅读教练",
+    "permissions": [ "tabs", "\u003Call_urls\u003E", "storage","http://*/"],
+    "update_url": "https://clients2.google.com/service/update2/crx",
+    "version": "0.1",
+    "web_accessible_resources": [],
     "content_security_policy": "script-src 'self'; object-src 'self'"
 }
