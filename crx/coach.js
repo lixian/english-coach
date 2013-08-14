@@ -104,15 +104,15 @@ var knownSet = new Set();
 // add stopwords
 knownSet.addAll(lower(stopwords));
 log("after add stopwords, known count = " + knownSet.size());
-// add cet-4
-knownSet.addAll(lower(cet4_keys));
-log("after add cet-4, known count = " + knownSet.size());
 // add junior high
 knownSet.addAll(lower(junior_high_keys));
 log("after add junior high, known count = " + knownSet.size());
 // add senior high
 knownSet.addAll(lower(senior_high_keys));
 log("after add senior high, known count = " + knownSet.size());
+// add cet-4
+knownSet.addAll(lower(cet4_keys));
+log("after add cet-4, known count = " + knownSet.size());
 
 // add personal custom words
 // setCustomKeys(null);
